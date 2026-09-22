@@ -4,7 +4,7 @@ import { z } from "zod";
 import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, Check, Timer, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Metric, Page, ProgressBar, Surface } from "@/components/app-ui";
-import { materialById, subtestById } from "@/data/catalog";
+import { examById, materialById, subtestById } from "@/data/catalog";
 import type { Question } from "@/data/questions";
 import { CHALLENGE_SECONDS, selectQuestions, type SessionFilters } from "@/services/session";
 import { getQuestionStat, recordAttempt, setNeedsReview } from "@/services/user-data";
@@ -197,6 +197,7 @@ function QuestionPage() {
 
   const material = materialById(question.material);
   const subtest = subtestById(question.subtest);
+  const exam = examById(question.exam);
   const correct = selected === question.correct_answer;
   const flagged = getQuestionStat(question.id).needs_review;
   const remaining = Math.max(0, CHALLENGE_SECONDS - elapsed);
@@ -228,7 +229,7 @@ function QuestionPage() {
       <div className="mt-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-sm font-semibold text-primary">
-            {subtest?.name ?? question.subtest.toUpperCase()} · {material?.name ?? question.material}
+            {exam?.name ?? question.exam.toUpperCase()} · {subtest?.name ?? question.subtest.toUpperCase()} · {material?.name ?? question.material}
           </p>
           <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
             {question.difficulty && <span className="rounded-full bg-secondary px-2.5 py-1 capitalize">{question.difficulty}</span>}
@@ -243,13 +244,13 @@ function QuestionPage() {
             const isCorrect = choice === question.correct_answer;
             const chosen = choice === selected;
             return (
-              <button
+              <Button
                 key={option}
                 type="button"
                 onClick={() => !submitted && setSelected(choice)}
                 className={cn(
-                  "flex w-full items-center gap-4 rounded-2xl border bg-card p-4 text-left text-answer-default transition-all",
-                  !submitted && !chosen && "border-border hover:-translate-y-0.5 hover:border-primary hover:bg-answer-hover hover:text-answer-hover-foreground hover:shadow-soft",
+                  "h-auto min-h-16 w-full justify-start whitespace-normal rounded-2xl border bg-card p-4 text-left text-answer-default transition-all active:scale-[0.99]",
+                  !submitted && !chosen && "border-border hover:border-primary hover:bg-answer-hover hover:text-answer-hover-foreground hover:shadow-soft",
                   !submitted && chosen && "border-answer-selected-border bg-answer-selected text-answer-selected-foreground",
                   submitted && isCorrect && "border-answer-correct-border bg-answer-correct text-answer-correct-foreground",
                   submitted && chosen && !isCorrect && "border-answer-incorrect-border bg-answer-incorrect text-answer-incorrect-foreground",
@@ -263,13 +264,13 @@ function QuestionPage() {
                 <span className="font-medium">{option}</span>
                 {submitted && isCorrect && <Check className="ml-auto h-5 w-5 shrink-0 text-success" />}
                 {submitted && chosen && !isCorrect && <X className="ml-auto h-5 w-5 shrink-0 text-destructive" />}
-              </button>
+              </Button>
             );
           })}
         </div>
 
         {!submitted && (
-          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
             <Button
               type="button"
               variant="outline"
@@ -321,7 +322,7 @@ function QuestionPage() {
                 {flagged ? <BookmarkCheck /> : <Bookmark />}
                 {flagged ? "Marked for review" : "Mark for review"}
               </Button>
-              <Button size="lg" onClick={next} className="sm:min-w-44">
+               <Button size="lg" onClick={next} className="w-full sm:w-auto sm:min-w-44">
                 {index === session.length - 1 ? "Finish Drill" : "Next Question"}
                 <ArrowRight />
               </Button>
@@ -394,7 +395,7 @@ function ResultSummary({ results }: { results: Result[] }) {
       </Surface>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-        <Button className="flex-1" asChild>
+         <Button className="flex-1" asChild disabled={reviewList.length === 0}>
           <Link to="/question" search={{ source: "review", count: 10, difficulty: "All", status: "All", challenge: false }}>Review Now</Link>
         </Button>
         <Button variant="outline" className="flex-1" asChild>
