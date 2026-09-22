@@ -306,6 +306,60 @@ export function getDailySeries(days: number) {
   return series;
 }
 
+export type ActivityPoint = DayRecord & {
+  accuracy: number | null;
+};
+
+/** Daily activity for a fixed window, or the learner's complete recorded history. */
+export function getActivitySeries(range: "week" | "month" | "all", materialId?: string): ActivityPoint[] {
+  const data = load();
+  const relevantAttempts = materialId
+    ? data.attempts.filter((attempt) => attempt.material === materialId)
+    : data.attempts;
+
+  if (range === "all") {
+    const buckets = new Map<string, DayRecord>();
+    relevantAttempts.forEach((attempt) => {
+      const key = dateKey(new Date(attempt.at));
+      const day = buckets.get(key) ?? { date: key, questions: 0, correct: 0, seconds: 0 };
+      buckets.set(key, {
+        date: key,
+        questions: day.questions + 1,
+        correct: day.correct + (attempt.correct ? 1 : 0),
+        seconds: day.seconds + attempt.time_taken,
+      });
+    });
+    return [...buckets.values()]
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((day) => ({ ...day, accuracy: day.questions ? Math.round((day.correct / day.questions) * 100) : null }));
+  }
+
+  const days = range === "week" ? 7 : 30;
+  if (!materialId) {
+    return getDailySeries(days).map((day) => ({
+      ...day,
+      accuracy: day.questions ? Math.round((day.correct / day.questions) * 100) : null,
+    }));
+  }
+
+  const series: ActivityPoint[] = [];
+  for (let offset = days - 1; offset >= 0; offset -= 1) {
+    const date = new Date();
+    date.setDate(date.getDate() - offset);
+    const key = dateKey(date);
+    const attempts = relevantAttempts.filter((attempt) => dateKey(new Date(attempt.at)) === key);
+    const correct = attempts.filter((attempt) => attempt.correct).length;
+    series.push({
+      date: key,
+      questions: attempts.length,
+      correct,
+      seconds: attempts.reduce((sum, attempt) => sum + attempt.time_taken, 0),
+      accuracy: attempts.length ? Math.round((correct / attempts.length) * 100) : null,
+    });
+  }
+  return series;
+}
+
 export function getOverview(range: Range = "all") {
   const data = load();
   const limit = rangeDays[range];
@@ -330,6 +384,20 @@ export function getOverview(range: Range = "all") {
     averageTime: total ? Math.round(seconds / total) : 0,
     studySeconds: seconds,
   };
+}
+
+export function getCompletionForQuestions(ids: string[]) {
+  const touched = ids.filter((id) => getQuestionStat(id).attempts > 0).length;
+  return {
+    completed: touched,
+    total: ids.length,
+    percentage: ids.length ? Math.round((touched / ids.length) * 100) : 0,
+  };
+}
+
+export function getLastPracticed() {
+  const attempts = load().attempts;
+  return attempts.length ? attempts[attempts.length - 1]?.at ?? null : null;
 }
 
 export function getStreak() {
