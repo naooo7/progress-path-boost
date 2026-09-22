@@ -1,0 +1,18 @@
+{
+  "source": "https://github.com/naooo7/glow-learn-campus",
+  "capabilities": [
+    {"capability":"Application code and routes","source":"GitHub repository","outcome":"Import existing TanStack Start application in place, preserving its route structure and components","status":"planned","next_action":"Copy reviewed source into this project after plan approval"},
+    {"capability":"Question catalog and taxonomy","source":"Bundled repository data","outcome":"Preserve existing exam, subtest, material, question, and institution data","status":"preserve","next_action":"Verify all existing flows after import"},
+    {"capability":"Learning activity persistence","source":"Browser local storage through the existing KeyValueStore and user-data service","outcome":"Preserve local-first persistence and use it as the sole activity source","status":"enhance","next_action":"Complete real-data selectors and connect every screen"},
+    {"capability":"Analytics and charts","source":"Mixed real selectors and template values","outcome":"Remove template values and derive totals, trends, time, weak areas, review, and mastery from stored attempts","status":"planned","next_action":"Implement and verify live updates and empty states"},
+    {"capability":"Streaks","source":"Existing day-history streak selector plus hardcoded display values","outcome":"Keep calculation logic and connect Home, Progress, and Profile to it","status":"planned","next_action":"Verify current and longest streak persistence and updates"},
+    {"capability":"Institution themes","source":"Persisted profile preferences and theme palettes","outcome":"Preserve PKN STAN, UNPAD, UI, ITB and default-theme behavior","status":"preserve","next_action":"Verify all themes in light, dark, system, and after refresh"},
+    {"capability":"Authentication and user identities","source":"No authentication system detected; profile is local prototype data","outcome":"Do not introduce backend or authentication infrastructure","status":"preserve","next_action":"Use the existing local profile identity and preferences"},
+    {"capability":"Database and records","source":"No external database or record export detected","outcome":"Keep the explicitly requested local-first architecture","status":"preserve","next_action":"No migration required"},
+    {"capability":"Uploaded files and storage","source":"Bundled institution logo assets","outcome":"Preserve bundled assets","status":"preserve","next_action":"Verify every logo renders"},
+    {"capability":"External providers, payments, email, AI, analytics services","source":"None detected","outcome":"No provider migration required","status":"not_applicable","next_action":"None"},
+    {"capability":"Public endpoints, callbacks, webhooks, schedules","source":"None detected","outcome":"No endpoint migration required","status":"not_applicable","next_action":"None"},
+    {"capability":"Responsive UI and accessibility","source":"Existing mobile-first interface and semantic theme tokens","outcome":"Incrementally polish requested screens without replacing architecture","status":"planned","next_action":"Implement and verify 320px, 375px, 390px, and desktop"},
+    {"capability":"Verification and cutover","source":"Requested end-to-end journey","outcome":"Verify question completion through persisted analytics, streak, charts, mastery, mistakes, and review","status":"pending","next_action":"Run build, browser journey, responsive and theme checks after implementation"}
+  ]
+}
