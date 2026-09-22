@@ -395,9 +395,7 @@ function ResultSummary({ results }: { results: Result[] }) {
       </Surface>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-         <Button className="flex-1" asChild disabled={reviewList.length === 0}>
-          <Link to="/question" search={{ source: "review", count: 10, difficulty: "All", status: "All", challenge: false }}>Review Now</Link>
-        </Button>
+         {reviewList.length ? <Button className="flex-1" asChild><Link to="/question" search={{ source: "review", count: 10, difficulty: "All", status: "All", challenge: false }}>Review Now</Link></Button> : <Button type="button" className="flex-1" disabled>Review Now</Button>}
         <Button variant="outline" className="flex-1" asChild>
           <Link to="/progress">View Progress</Link>
         </Button>

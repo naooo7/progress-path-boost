@@ -13,6 +13,7 @@ import { Home, LibraryBig, ChartNoAxesCombined, UserRound, Dumbbell } from "luci
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeProvider } from "../hooks/use-theme";
+import { Button } from "@/components/ui/button";
 
 function NotFoundComponent() {
   return (
@@ -53,15 +54,14 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           Something went wrong on our end. You can try refreshing or head back home.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
+          <Button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Try again
-          </button>
+          </Button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
@@ -132,7 +132,7 @@ function RootComponent() {
                 <Link key={to} to={to} activeOptions={{ exact: to === "/" }} className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" activeProps={{ className: "bg-secondary text-foreground" }}>{label}</Link>
               ))}
             </nav>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary font-semibold text-foreground">N</div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary font-semibold text-foreground">FL</div>
           </div>
         </header>
         <main className="pb-24 md:pb-8"><Outlet /></main>
