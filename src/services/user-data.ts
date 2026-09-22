@@ -63,15 +63,25 @@ const emptyData: UserData = { version: 1, attempts: [], stats: {}, days: {} };
 
 let cache: UserData | null = null;
 const listeners = new Set<() => void>();
+let browserReadsEnabled = false;
 
 export const dateKey = (date = new Date()) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 function load(): UserData {
+  if (typeof window !== "undefined" && !browserReadsEnabled) return emptyData;
   if (cache) return cache;
   const stored = getStore().read<UserData>(STORAGE_KEY);
   cache = stored && stored.version === 1 ? { ...emptyData, ...stored } : emptyData;
   return cache;
+}
+
+/** Keep the first browser render identical to SSR, then load persisted activity after hydration. */
+export function enableBrowserUserData() {
+  if (browserReadsEnabled) return;
+  browserReadsEnabled = true;
+  cache = null;
+  listeners.forEach((listener) => listener());
 }
 
 function commit(next: UserData) {

@@ -25,7 +25,7 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   useUserData();
   const { targetInstitution, institutionThemeEnabled } = useTheme();
-  const showInstitution = institutionThemeEnabled && targetInstitution;
+  const hasInstitution = Boolean(targetInstitution);
   const streak = getStreak();
   const week = getOverview("week");
   const reviewCount = getReviewQuestionIds().length;
@@ -38,15 +38,15 @@ function HomePage() {
   const greeting = new Date().getHours() < 12 ? "Good morning" : new Date().getHours() < 18 ? "Good afternoon" : "Good evening";
 
   return <Page>
-    <section className={cn("relative mb-7 overflow-hidden rounded-3xl border border-border/60 bg-card p-6 shadow-soft transition-all duration-500 animate-rise md:p-9", showInstitution && "glass-primary border-primary/20")}>
-      {showInstitution && <div className="pointer-events-none absolute -right-8 -top-8 opacity-10 md:opacity-15"><img src={targetInstitution.logo} alt="" className="h-48 w-64 object-contain" /></div>}
+    <section className={cn("relative mb-7 overflow-hidden rounded-3xl border border-border/60 bg-card p-6 shadow-soft transition-all duration-500 animate-rise md:p-9", institutionThemeEnabled && hasInstitution && "glass-primary border-primary/20")}>
+      {targetInstitution && <div className="pointer-events-none absolute -right-8 -top-8 opacity-10 md:opacity-15"><img src={targetInstitution.logo} alt="" className="h-48 w-64 object-contain" /></div>}
       <div className="relative z-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-secondary/90 px-3 py-1.5 text-sm font-semibold text-secondary-foreground backdrop-blur-sm"><Flame className="h-4 w-4 text-primary" /> {streak.current > 0 ? `${streak.current} day streak` : "Start your streak today"}</p>
           <h1 className="font-display text-3xl font-bold md:text-5xl">{greeting}.</h1>
           <p className="mt-2 text-muted-foreground">Pick up where you left off, or start a focused session.</p>
         </div>
-        {showInstitution && <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/80 p-3 shadow-soft backdrop-blur-md"><img src={targetInstitution.logo} alt={targetInstitution.shortName} className="h-10 w-10 object-contain" /><div><p className="text-xs font-bold uppercase text-muted-foreground">Target</p><p className="font-display text-sm font-bold">{targetInstitution.shortName}</p></div></div>}
+        {targetInstitution && <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card/80 p-3 shadow-soft backdrop-blur-md"><img src={targetInstitution.logo} alt={targetInstitution.shortName} className="h-10 w-10 object-contain" /><div><p className="text-xs font-bold uppercase text-muted-foreground">Target</p><p className="font-display text-sm font-bold">{targetInstitution.shortName}</p></div></div>}
       </div>
     </section>
 
@@ -54,7 +54,7 @@ function HomePage() {
       <Surface className="home-drill relative overflow-hidden border-primary/15 text-primary-foreground">
         <div className="home-drill-reflection pointer-events-none absolute inset-0" />
         <div className="pointer-events-none absolute inset-y-0 right-0 flex w-1/2 items-center justify-center">
-          {showInstitution ? <><div className="home-logo-glow absolute h-44 w-44 rounded-full md:h-64 md:w-64" /><img src={targetInstitution.logo} alt="" className="home-logo h-40 w-40 object-contain md:h-64 md:w-64" /></> : <GraduationCap className="home-logo h-36 w-36 md:h-56 md:w-56" strokeWidth={1} />}
+          {targetInstitution ? <><div className="home-logo-glow absolute h-44 w-44 rounded-full md:h-64 md:w-64" /><img src={targetInstitution.logo} alt="" className="home-logo h-40 w-40 object-contain md:h-64 md:w-64" /></> : <GraduationCap className="home-logo h-36 w-36 md:h-56 md:w-56" strokeWidth={1} />}
         </div>
         <div className="relative z-10 flex min-h-64 max-w-[78%] flex-col justify-between sm:max-w-[64%]">
           <div><p className="text-sm font-semibold text-primary-foreground/80">CONTINUE LEARNING</p><h2 className="mt-3 font-display text-2xl font-bold sm:text-3xl">{continueMaterial?.name ?? "Start your first material"}</h2><p className="mt-2 text-primary-foreground/80">{continueMaterial ? `${continueMaterial.examId.toUpperCase()} · ${mastery}% mastery` : "Build your learning history one question at a time"}</p></div>

@@ -1,5 +1,5 @@
-import { useSyncExternalStore } from "react";
-import { getUserData, subscribe, type UserData } from "@/services/user-data";
+import { useEffect, useSyncExternalStore } from "react";
+import { enableBrowserUserData, getUserData, subscribe, type UserData } from "@/services/user-data";
 
 const serverSnapshot: UserData = { version: 1, attempts: [], stats: {}, days: {} };
 
@@ -9,5 +9,7 @@ const serverSnapshot: UserData = { version: 1, attempts: [], stats: {}, days: {}
  * Components derive what they need with the selectors in services/user-data.
  */
 export function useUserData() {
-  return useSyncExternalStore(subscribe, getUserData, () => serverSnapshot);
+  const data = useSyncExternalStore(subscribe, getUserData, () => serverSnapshot);
+  useEffect(() => enableBrowserUserData(), []);
+  return data;
 }

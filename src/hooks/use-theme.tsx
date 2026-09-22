@@ -49,10 +49,10 @@ function readPreference(): ThemePreference {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [preference, setPreferenceState] = useState<ThemePreference>(readPreference);
+  const [preference, setPreferenceState] = useState<ThemePreference>("system");
   const [systemTheme, setSystemTheme] = useState<"light" | "dark">("light");
-  const [targetInstitutionId, setTargetInstitutionIdState] = useState<string | null>(getTargetInstitutionId);
-  const [institutionThemeEnabled, setInstitutionThemeEnabledState] = useState(getInstitutionThemeEnabled);
+  const [targetInstitutionId, setTargetInstitutionIdState] = useState<string | null>(null);
+  const [institutionThemeEnabled, setInstitutionThemeEnabledState] = useState(false);
 
   const refreshFromStorage = () => {
     setPreferenceState(readPreference());
