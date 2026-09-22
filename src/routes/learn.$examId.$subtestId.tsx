@@ -2,7 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { LinkRow, Page, PageTitle, ProgressBar } from "@/components/app-ui";
 import { examById, findSubtest, materialsForSubtest } from "@/data/catalog";
 import { questionsForMaterial } from "@/data/questions";
-import { getMaterialMastery } from "@/services/user-data";
+import { getCompletionForQuestions, getMaterialMastery, getScopeStats } from "@/services/user-data";
 import { useUserData } from "@/hooks/use-user-data";
 
 export const Route = createFileRoute("/learn/$examId/$subtestId")({
@@ -48,12 +48,15 @@ function SubtestPage() {
       <div className="space-y-3">
         {materialsForSubtest(subtest.id).map((material) => {
           const mastery = getMaterialMastery(material.id);
+          const materialQuestions = questionsForMaterial(material.id);
+          const completion = getCompletionForQuestions(materialQuestions.map((question) => question.id));
+          const stats = getScopeStats((stat) => stat.material === material.id);
           return (
             <LinkRow
               key={material.id}
               to={`/material/${material.id}`}
               title={material.name}
-              subtitle={`${questionsForMaterial(material.id).length} questions`}
+              subtitle={`${completion.completed}/${completion.total} completed · ${stats.attempts ? `${stats.accuracy}% accuracy` : "Not started"}`}
               trailing={
                 <div className="hidden w-28 sm:block">
                   <div className="mb-1 text-right text-xs font-semibold text-muted-foreground">{mastery}%</div>

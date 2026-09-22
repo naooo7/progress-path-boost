@@ -3,7 +3,7 @@ import { ArrowRight, BookOpenCheck } from "lucide-react";
 import { Page, PageTitle, ProgressBar, Surface } from "@/components/app-ui";
 import { exams, subtestsForExam } from "@/data/catalog";
 import { questionsForExam } from "@/data/questions";
-import { getExamMastery } from "@/services/user-data";
+import { getCompletionForQuestions, getExamMastery, getScopeStats } from "@/services/user-data";
 import { useUserData } from "@/hooks/use-user-data";
 
 export const Route = createFileRoute("/learn/")({
@@ -29,6 +29,9 @@ function LearnPage() {
       <div className="grid gap-5 md:grid-cols-2">
         {exams.map((exam) => {
           const mastery = getExamMastery(exam.id);
+          const examQuestions = questionsForExam(exam.id);
+          const completion = getCompletionForQuestions(examQuestions.map((question) => question.id));
+          const stats = getScopeStats((stat) => stat.exam === exam.id);
           return (
             <Link key={exam.id} to="/learn/$examId" params={{ examId: exam.id }} className="group">
               <Surface className="flex min-h-60 flex-col justify-between transition-all hover:-translate-y-1 hover:shadow-float">
@@ -39,9 +42,9 @@ function LearnPage() {
                   <div className="mt-6">
                     <div className="mb-2 flex justify-between text-sm">
                       <span>
-                        {subtestsForExam(exam.id).length} subtests · {questionsForExam(exam.id).length} questions
+                        {completion.completed}/{completion.total} completed · {stats.attempts ? `${stats.accuracy}% accuracy` : "Not started"}
                       </span>
-                      <strong>{mastery}%</strong>
+                       <strong>{completion.percentage}%</strong>
                     </div>
                     <ProgressBar value={mastery} />
                   </div>

@@ -1,10 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { BookOpen, Dumbbell, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Metric, MiniLine, Page, PageTitle, Surface } from "@/components/app-ui";
+import { Metric, Page, PageTitle, Surface, TrendChart } from "@/components/app-ui";
 import { materialById, subtestById } from "@/data/catalog";
 import { questionsForMaterial } from "@/data/questions";
-import { getMaterialMastery, getScopeStats } from "@/services/user-data";
+import { getActivitySeries, getCompletionForQuestions, getMaterialMastery, getScopeStats } from "@/services/user-data";
 import { useUserData } from "@/hooks/use-user-data";
 
 export const Route = createFileRoute("/material/$materialId")({
@@ -37,6 +37,8 @@ function MaterialPage() {
   const availableQuestions = questionsForMaterial(material.id);
   const mastery = getMaterialMastery(material.id);
   const stats = getScopeStats((stat) => stat.material === material.id);
+  const completion = getCompletionForQuestions(availableQuestions.map((question) => question.id));
+  const performance = getActivitySeries("month", material.id).filter((day) => day.questions > 0).slice(-7);
   const drillSearch = {
     exam: material.examId,
     material: material.id,
@@ -56,7 +58,7 @@ function MaterialPage() {
       <Surface>
         <div className="grid grid-cols-3 gap-5 border-b border-border pb-6">
           <Metric label="Mastery" value={`${mastery}%`} />
-          <Metric label="Questions" value={availableQuestions.length} />
+           <Metric label="Completed" value={`${completion.completed}/${completion.total}`} />
           <Metric label="Accuracy" value={`${stats.accuracy}%`} />
         </div>
         <div className="mt-6 grid grid-cols-3 gap-3">
@@ -83,9 +85,9 @@ function MaterialPage() {
       </Surface>
       <Surface className="mt-5">
         <h2 className="font-display text-xl font-bold">Recent Performance</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Accuracy across your last seven sessions</p>
+         <p className="mt-1 text-sm text-muted-foreground">Accuracy across your latest active days</p>
         <div className="mt-7">
-          <MiniLine values={[63, 68, 65, 71, 74, 70, 76]} />
+           <TrendChart label="Recent material accuracy" unit="%" data={performance.map((day) => ({ label: day.date.slice(5), value: day.accuracy }))} />
         </div>
       </Surface>
       <Surface className="mt-5">

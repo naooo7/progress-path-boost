@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { Page, PageTitle, ProgressBar, Surface } from "@/components/app-ui";
 import { examById, materialsForSubtest, subtestsForExam } from "@/data/catalog";
 import { questionsForSubtest } from "@/data/questions";
-import { getSubtestMastery } from "@/services/user-data";
+import { getCompletionForQuestions, getScopeStats, getSubtestMastery } from "@/services/user-data";
 import { useUserData } from "@/hooks/use-user-data";
 
 export const Route = createFileRoute("/learn/$examId/")({
@@ -46,6 +46,9 @@ function ExamPage() {
         {subtests.map((subtest) => {
           const subtestMaterials = materialsForSubtest(subtest.id);
           const mastery = getSubtestMastery(subtest.id);
+          const subtestQuestions = questionsForSubtest(subtest.id);
+          const completion = getCompletionForQuestions(subtestQuestions.map((question) => question.id));
+          const stats = getScopeStats((stat) => stat.subtest === subtest.id);
           const single = subtestMaterials.length === 1 ? subtestMaterials[0] : null;
           const content = (
             <Surface className="group h-full transition-all hover:-translate-y-1 hover:shadow-float">
@@ -60,9 +63,9 @@ function ExamPage() {
                 <div className="mb-2 flex justify-between text-sm">
                   <span>
                     {subtestMaterials.length} {subtestMaterials.length === 1 ? "Material" : "Materials"} ·{" "}
-                    {questionsForSubtest(subtest.id).length} questions
+                     {completion.completed}/{completion.total} completed
                   </span>
-                  <strong>{mastery}%</strong>
+                   <strong>{stats.attempts ? `${stats.accuracy}% accuracy` : "Not started"}</strong>
                 </div>
                 <ProgressBar value={mastery} />
               </div>
