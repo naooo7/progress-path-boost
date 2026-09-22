@@ -8,9 +8,11 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { Home, LibraryBig, ChartNoAxesCombined, UserRound, Dumbbell } from "lucide-react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ThemeProvider } from "../hooks/use-theme";
 
 function NotFoundComponent() {
   return (
@@ -77,19 +79,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "FastLearner" },
+      { name: "description", content: "Learn, practice, review, and master your exams." },
+      { name: "author", content: "FastLearner" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
@@ -119,8 +122,37 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ThemeProvider>
+        <div className="min-h-screen bg-background">
+        <header className="sticky top-0 z-40 hidden border-b border-border/70 bg-background/90 backdrop-blur-xl md:block">
+          <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-6">
+            <Link to="/" className="font-display text-lg font-bold text-foreground">FastLearner<span className="text-primary">.</span></Link>
+            <nav className="flex items-center gap-1 rounded-full border border-border bg-card p-1.5 shadow-soft">
+              {navItems.map(({ label, to }) => (
+                <Link key={to} to={to} activeOptions={{ exact: to === "/" }} className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" activeProps={{ className: "bg-secondary text-foreground" }}>{label}</Link>
+              ))}
+            </nav>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary font-semibold text-foreground">N</div>
+          </div>
+        </header>
+        <main className="pb-24 md:pb-8"><Outlet /></main>
+        <nav className="fixed inset-x-3 bottom-3 z-50 grid grid-cols-5 rounded-2xl border border-border/80 bg-card/95 p-1.5 shadow-float backdrop-blur-xl md:hidden">
+          {navItems.map(({ label, to, icon: Icon }) => (
+            <Link key={to} to={to} activeOptions={{ exact: to === "/" }} className="flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-[11px] font-medium text-muted-foreground" activeProps={{ className: "bg-secondary text-primary" }}>
+              <Icon className="h-[18px] w-[18px]" strokeWidth={2} />{label}
+            </Link>
+          ))}
+        </nav>
+        </div>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
+
+const navItems = [
+  { label: "Home", to: "/" as const, icon: Home },
+  { label: "Learn", to: "/learn" as const, icon: LibraryBig },
+  { label: "Drill", to: "/drill" as const, icon: Dumbbell },
+  { label: "Progress", to: "/progress" as const, icon: ChartNoAxesCombined },
+  { label: "Profile", to: "/profile" as const, icon: UserRound },
+];
